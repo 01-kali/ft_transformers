@@ -1,0 +1,22 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Task {
+  id          Int      @id @default(autoincrement()) // "id (PK)"
+  project_id  Int      // "project_id" (No relation, just a number)
+  title       String   // "title"
+  description String?  // "description" (The ? means it can be empty)
+  status      String   // "status" (TODO, DONE)
+  position    Int      // "position"
+  assigned_to Int?     // "assigned_to" (User ID)
+  created_by  Int      // "created_by" (User ID)
+  due_date    DateTime? // "due_date"
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
