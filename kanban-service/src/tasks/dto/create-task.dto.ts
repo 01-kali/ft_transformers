@@ -6,14 +6,26 @@ export class CreateTaskDto {
   @IsNotEmpty()
   title: string;
 
-  @IsOptional()
   @IsString()
+  @IsOptional()
   description?: string;
 
-  @IsOptional()
   @IsEnum(TaskStatus)
-  status?: TaskStatus; 
+  status: TaskStatus; 
+  
+  @IsString()
+  @IsOptional()
+  priority?: string;
 
   @IsInt()
-  projectId: number;
+  @IsOptional()
+  projectId?: number;
+
+  @IsInt()
+  @IsOptional()
+  createdBy?: number;
+
+  @IsInt()
+  @IsOptional()
+  assignedTo?: number;
 }

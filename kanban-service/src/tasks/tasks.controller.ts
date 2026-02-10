@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { TasksGateway } from './tasks.gateway';
@@ -8,7 +17,7 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 export class TasksController {
   constructor(
     private readonly tasksService: TasksService,
-    private readonly tasksGateway: TasksGateway
+    private readonly tasksGateway: TasksGateway,
   ) {}
 
   @Get()
@@ -23,10 +32,15 @@ export class TasksController {
     return task;
   }
 
+  @Patch('reorder')
+  async reorder(@Body() body: { taskIds: number[] }) {
+    return this.tasksService.reorder(body.taskIds);
+  }
+
   @Patch(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateTaskDto: UpdateTaskDto
+    @Body() updateTaskDto: UpdateTaskDto,
   ) {
     const updatedTask = await this.tasksService.update(id, updateTaskDto);
     this.tasksGateway.server.emit('task:updated', updatedTask);

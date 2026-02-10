@@ -13,6 +13,7 @@ model Task {
   title       String   // "title"
   description String?  // "description" (The ? means it can be empty)
   status      String   // "status" (TODO, DONE)
+  priority    String   @default("Medium")
   position    Int      // "position"
   assigned_to Int?     // "assigned_to" (User ID)
   created_by  Int      // "created_by" (User ID)
