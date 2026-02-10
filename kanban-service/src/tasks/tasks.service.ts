@@ -10,9 +10,9 @@ export class TasksService {
 
   constructor(private tasksGateway: TasksGateway) {}
 
-  async findAll() {
-    return await this.prisma.task.findMany({
-      orderBy: { position: 'asc' },
+  findAll() {
+    return this.prisma.task.findMany({
+      orderBy: [{ position: 'asc' }, { id: 'asc' }],
     });
   }
 
@@ -51,6 +51,13 @@ export class TasksService {
 
       this.tasksGateway.broadcastTaskUpdated(task);
 
+      if (updateTaskDto.status) {
+        this.tasksGateway.sendNotification(
+          `Task "${task.title}" moved to ${task.status}`,
+        );
+      } else {
+        this.tasksGateway.sendNotification(`Task "${task.title}" was updated`);
+      }
       return task;
     } catch (error) {
       if (error.code === 'P2025') {
@@ -69,7 +76,9 @@ export class TasksService {
     });
 
     const results = await this.prisma.$transaction(updates);
-    results.forEach((task) => this.tasksGateway.broadcastTaskUpdated(task));
+    this.tasksGateway.broadcastBoardUpdated();
+    // results.forEach((task) => this.tasksGateway.broadcastTaskUpdated(task));
+    // this.tasksGateway.sendNotification('Board layout was updated');
     return results;
   }
 

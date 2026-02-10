@@ -51,13 +51,29 @@ function App() {
       setTasks((prevTasks) => prevTasks.filter((t) => t.id !== id));
     });
 
+    socket.on('board:updated', () => {
+      fetchTasks();
+    });
+
+    socket.on('notification', (data: { message: string }) => {
+      toast(data.message, {
+        icon: '🔔',
+        position: 'top-left',
+        style: {
+          border: '1px solid #3b82f6',
+          padding: '16px',
+          color: '#3b82f6',
+        },
+      });
+    });
+
     return () => {
       socket.disconnect();
     };
   }, []);
 
   const fetchTasks = () => {
-    axios.get('http://localhost:3003/tasks')
+    axios.get(`http://localhost:3003/tasks?timestamp=${Date.now()}`)
       .then(res => {
         setTasks(res.data);
         setLoading(false);
@@ -166,6 +182,7 @@ function App() {
   const getTasksByStatus = (status: string) => {
     return tasks
     .filter(task => task.status === status)
+    .sort((a, b) => a.position - b.position)
     .filter(task => {
       if (!searchQuery) return true;
       const searchLower = searchQuery.toLowerCase();
@@ -268,7 +285,7 @@ function App() {
           </div>
 
           <DragDropContext onDragEnd={onDragEnd}>
-              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-hidden pb-2">
+              <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-y-auto pb-2">
                 {['TODO', 'IN_PROGRESS', 'REVIEW', 'DONE'].map(status => (
                   <KanbanColumn 
                     key={status}

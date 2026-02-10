@@ -11,6 +11,10 @@ export class TasksGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
+  broadcastBoardUpdated() {
+    this.server.emit('board:updated');
+  }
+
   handleConnection(client: Socket) {
     console.log(`Client connected: ${client.id}`);
   }
@@ -25,6 +29,10 @@ export class TasksGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   broadcastTaskUpdated(task: any) {
     this.server.emit('task:updated', task);
+  }
+
+  sendNotification(message: string) {
+    this.server.emit('notification', { message });
   }
 
   broadcastTaskDeleted(id: number) {
