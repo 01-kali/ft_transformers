@@ -7,11 +7,16 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { TasksGateway } from './tasks.gateway';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('tasks')
 export class TasksController {
@@ -26,7 +31,26 @@ export class TasksController {
   }
 
   @Post()
-  async create(@Body() createTaskDto: CreateTaskDto) {
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, callback) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+        },
+      }),
+    }),
+  )
+  async create(
+    @Body() createTaskDto: CreateTaskDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    if (file) {
+      (createTaskDto as any).attachment_url = file.filename;
+    }
     const task = await this.tasksService.create(createTaskDto);
     this.tasksGateway.broadcastTaskCreated(task);
     return task;
@@ -38,13 +62,28 @@ export class TasksController {
   }
 
   @Patch(':id')
-  async update(
-    @Param('id', ParseIntPipe) id: number,
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, callback) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+        },
+      }),
+    }),
+  )
+  update(
+    @Param('id') id: string,
     @Body() updateTaskDto: UpdateTaskDto,
+    @UploadedFile() file: Express.Multer.File,
   ) {
-    const updatedTask = await this.tasksService.update(id, updateTaskDto);
-    this.tasksGateway.server.emit('task:updated', updatedTask);
-    return updatedTask;
+    if (file) {
+      (updateTaskDto as any).attachmentUrl = file.filename;
+    }
+    return this.tasksService.update(+id, updateTaskDto);
   }
 
   @Delete(':id')

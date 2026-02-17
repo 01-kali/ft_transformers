@@ -1,4 +1,13 @@
-import { IsString, IsNotEmpty, IsOptional, IsInt, IsEnum } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsInt,
+  IsEnum,
+  IsDateString,
+  IsNumber,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 import { TaskStatus } from './task-status.enum';
 
 export class CreateTaskDto {
@@ -11,21 +20,36 @@ export class CreateTaskDto {
   description?: string;
 
   @IsEnum(TaskStatus)
-  status: TaskStatus; 
-  
+  status: TaskStatus;
+
   @IsString()
   @IsOptional()
   priority?: string;
 
-  @IsInt()
+  @IsString()
   @IsOptional()
+  attachmentUrl?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
   projectId?: number;
 
-  @IsInt()
   @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
   createdBy?: number;
 
-  @IsInt()
   @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
   assignedTo?: number;
+
+  @IsOptional()
+  @IsDateString()
+  startDate?: string;
+
+  @IsOptional()
+  @IsDateString()
+  dueDate?: string;
 }

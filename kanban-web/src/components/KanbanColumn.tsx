@@ -20,9 +20,11 @@ interface KanbanColumnProps {
   onDelete: (id: number) => void;
   onEdit: (task: Task) => void;
   isLoading?: boolean;
+  isReadOnly: boolean;
 }
 
-export default function KanbanColumn({ id, title, tasks, count, onAdd, onDelete, onEdit, isLoading }: KanbanColumnProps) {
+export default function KanbanColumn({ 
+  id, title, tasks, count, onAdd, onDelete, onEdit, isLoading, isReadOnly }: KanbanColumnProps) {
   return (
     <div className="flex-1  rounded-xl p-4 min-w-[280px] shrink-0 bg-[#F7F8FA] rounded-xl border border-gray-100 flex flex-col max-h-[calc(100vh-12rem)]">
        <div className="flex items-center justify-between mb-4 px-1 shrink-0">
@@ -30,9 +32,6 @@ export default function KanbanColumn({ id, title, tasks, count, onAdd, onDelete,
           <h2 className="font-bold text-gray-700 text-sm">{title}</h2>
           <span className="text-gray-400 text-sm font-medium">({count})</span>
         </div>
-        <button className="text-gray-400 hover:text-gray-600 transition-colors">
-          <MoreHorizontal size={18} />
-        </button>
       </div>
 
       <Droppable droppableId={id}>
@@ -66,11 +65,13 @@ export default function KanbanColumn({ id, title, tasks, count, onAdd, onDelete,
                   assignedTo={task.assignedTo || task.assigned_to}
                   onDelete={onDelete}
                   onClick={() => onEdit(task)}
+                  isReadOnly={isReadOnly}
                 />
               ))
             )}
             {provided.placeholder}
-            
+           
+            {isReadOnly && (
             <button 
               onClick={onAdd} 
               className="w-full py-2 border border-gray-300 rounded-lg text-gray-500 text-sm font-medium hover:bg-white hover:border-gray-400 transition-all flex items-center justify-center gap-2 bg-transparent group mt-3"
@@ -78,6 +79,7 @@ export default function KanbanColumn({ id, title, tasks, count, onAdd, onDelete,
               <Plus size={16} className="text-gray-400 group-hover:text-gray-600" />
               New
             </button>
+            )}
           </div>
         )}
       </Droppable>

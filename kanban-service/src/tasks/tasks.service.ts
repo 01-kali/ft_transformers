@@ -16,7 +16,7 @@ export class TasksService {
     });
   }
 
-  async create(createTaskDto: CreateTaskDto) {
+  async create(createTaskDto: CreateTaskDto & { attachment_url?: string }) {
     const task = await this.prisma.task.create({
       data: {
         title: createTaskDto.title,
@@ -27,6 +27,13 @@ export class TasksService {
         created_by: createTaskDto.createdBy || 1,
         position: 0,
         assigned_to: createTaskDto.assignedTo || null,
+        start_date: createTaskDto.startDate
+          ? new Date(createTaskDto.startDate)
+          : null,
+        due_date: createTaskDto.dueDate
+          ? new Date(createTaskDto.dueDate)
+          : null,
+        attachment_url: createTaskDto.attachment_url || null,
       },
     });
 
@@ -35,15 +42,27 @@ export class TasksService {
     return task;
   }
 
-  async update(id: number, updateTaskDto: UpdateTaskDto) {
+  async update(
+    id: number,
+    updateTaskDto: UpdateTaskDto & { attachmentUrl?: string },
+  ) {
     try {
-      const { assignedTo, ...rest } = updateTaskDto;
+      const { assignedTo, startDate, dueDate, attachmentUrl, ...rest } =
+        updateTaskDto;
       const dataToUpdate: any = { ...rest };
+
+      if (attachmentUrl !== undefined) {
+        dataToUpdate.attachment_url = attachmentUrl;
+      }
 
       if (assignedTo !== undefined) {
         dataToUpdate.assigned_to = assignedTo;
       }
 
+      if (startDate !== undefined)
+        dataToUpdate.start_date = startDate ? new Date(startDate) : null;
+      if (dueDate !== undefined)
+        dataToUpdate.due_date = dueDate ? new Date(dueDate) : null;
       const task = await this.prisma.task.update({
         where: { id: id },
         data: dataToUpdate,

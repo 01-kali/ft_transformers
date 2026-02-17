@@ -15,6 +15,9 @@ interface Task {
   status: string;
   priority?: string;
   assignedTo: number;
+  startDate?: string;
+  dueDate?: string;
+  attachmentUrl?: string;
 }
 
 function App() {
@@ -29,6 +32,12 @@ function App() {
 
   const [filterPriority, setFilterPriority] = useState<string | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const [currentView, setCurrentView] = useState<'board' | 'calendar'>('board');
+
+  const USER_ROLE = 'ADMIN';
+  const canEdit = USER_ROLE === 'ADMIN' || USER_ROLE === 'PM';
+  const canDelete = USER_ROLE === 'ADMIN';
 
   useEffect(() => {
     fetchTasks();
@@ -92,28 +101,49 @@ function App() {
     setIsModalOpen(true)
   }
 
-  const handleSaveTask = async (taskData: Partial<Task>) => {
+
+
+  const handleSaveTask = async (taskData: Partial<Task>, file?: File) => {
     try {
-      if (taskData.id) {
-        await axios.patch(`http://localhost:3003/tasks/${taskData.id}`, {
-          title: taskData.title,
-        description: taskData.description,
-        priority: taskData.priority,
-        assignedTo: taskData.assignedTo
-        });
-        toast.success("Task updated successfully!");
+      let dataToSend: any;
+      let config = {};
+
+      if (file) {
+        const formData = new FormData();
+        formData.append('title', taskData.title || '');
+        formData.append('description', taskData.description || '');
+        formData.append('status', taskData.status || 'TODO');
+        formData.append('priority', taskData.priority || 'Medium');
+        if (taskData.assignedTo) formData.append('assignedTo', String(taskData.assignedTo));
+        if (taskData.startDate) formData.append('startDate', taskData.startDate);
+        if (taskData.dueDate) formData.append('dueDate', taskData.dueDate);
+
+        formData.append('file', file);
+
+        dataToSend = formData;
+        config = { headers: { 'Content-Type': 'multipart/form-data' } };
       } else {
-        await axios.post('http://localhost:3003/tasks', {
+        dataToSend = {
           title: taskData.title,
-        description: taskData.description,
-        status: taskData.status,
-        priority: taskData.priority,
-        assignedTo: taskData.assignedTo
-        });
-        toast.success("New task created!");
+          description: taskData.description,
+          status: taskData.status,
+          priority: taskData.priority,
+          assignedTo: taskData.assignedTo ? Number(taskData.assignedTo) : null,
+          startDate: taskData.startDate,
+          dueDate: taskData.dueDate,
+        };
+        config = { headers: { 'Content-Type': 'application/json' } };
+      }
+      if (taskData.id) {
+        await axios.patch(`http://localhost:3003/tasks/${taskData.id}`, dataToSend, config);
+          toast.success("Task updated successfully!");
+      } else {
+        await axios.post('http://localhost:3003/tasks', dataToSend, config);
+          toast.success("New task created!");
       }
       setIsModalOpen(false);
       setEditingTask(null);
+      fetchTasks();
     } catch (error) {
       console.error("Error saving task:", error);
       toast.error("Something went wrong. Please try again.");
@@ -199,7 +229,7 @@ function App() {
   return (
     <div className="flex h-screen bg-white font-sans text-gray-900">
     <Toaster position="bottom-right" />
-      <Sidebar />
+      <Sidebar currentView={currentView} onViewChange={setCurrentView}/>
       <main className="flex-1 flex flex-col overflow-hidden bg-white">
         <header className="h-16 flex items-center justify-between px-8 bg-white border-b border-gray-100 shrink-0">
           <div className="flex items-center gap-3 text-sm text-gray-400">
@@ -284,7 +314,8 @@ function App() {
             </div>
           </div>
 
-          <DragDropContext onDragEnd={onDragEnd}>
+          {currentView === 'board' ? (
+            <DragDropContext onDragEnd={onDragEnd}>
               <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 overflow-y-auto pb-2">
                 {['TODO', 'IN_PROGRESS', 'REVIEW', 'DONE'].map(status => (
                   <KanbanColumn 
@@ -297,10 +328,14 @@ function App() {
                     onDelete={handleDeleteTask}
                     onEdit={openEditTaskModal}
                     loading={loading}
+                    isReadOnly={canEdit}
                   />
                 ))}
               </div>
-          </DragDropContext>
+            </DragDropContext>
+          ) : (
+          <>calendar</>
+          )}
         </div>
       </main>
 
@@ -310,6 +345,7 @@ function App() {
         onSave={handleSaveTask}
         taskToEdit={editingTask}
         defaultStatus={activeStatus}
+        isReadOnly={canEdit}
       />
     </div>
   );

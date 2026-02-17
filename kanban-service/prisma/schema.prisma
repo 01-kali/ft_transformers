@@ -8,16 +8,18 @@ generator client {
 }
 
 model Task {
-  id          Int      @id @default(autoincrement()) // "id (PK)"
-  project_id  Int      // "project_id" (No relation, just a number)
-  title       String   // "title"
-  description String?  // "description" (The ? means it can be empty)
-  status      String   // "status" (TODO, DONE)
+  id          Int      @id @default(autoincrement())
+  project_id  Int
+  title       String
+  description String?
+  status      String
   priority    String   @default("Medium")
-  position    Int      // "position"
-  assigned_to Int?     // "assigned_to" (User ID)
-  created_by  Int      // "created_by" (User ID)
-  due_date    DateTime? // "due_date"
+  position    Int
+  assigned_to Int?
+  created_by  Int
+  attachment_url String?
+  start_date  DateTime?
+  due_date    DateTime?
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 }

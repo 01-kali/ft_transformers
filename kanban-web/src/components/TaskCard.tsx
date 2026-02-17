@@ -10,6 +10,7 @@ interface TaskCardProps {
   assignedTo?: number;
   onDelete: (id: number) => void;
   onClick: () => void;
+  isReadOnly: boolean;
 }
 
 const getPriorityColor = (priority: string) => {
@@ -21,7 +22,8 @@ const getPriorityColor = (priority: string) => {
   }
 };
 
-export default function TaskCard({ id, index, title, priority = 'Medium', assignedTo, onDelete, onClick }: TaskCardProps) {
+export default function TaskCard({ 
+  id, index, title, priority = 'Medium', assignedTo, onDelete, onClick, isReadOnly }: TaskCardProps) {
   const user = assignedTo ? getUserById(assignedTo) : null;
   return (
     <Draggable draggableId={id.toString()} index={index}>
@@ -37,7 +39,8 @@ export default function TaskCard({ id, index, title, priority = 'Medium', assign
             <h3 className="text-sm font-bold text-gray-800 leading-tight pr-6">
               {title}
             </h3>
-            
+           
+            {isReadOnly &&(
             <button 
               onClick={(e) => {
                 e.stopPropagation();
@@ -47,6 +50,7 @@ export default function TaskCard({ id, index, title, priority = 'Medium', assign
             >
               <Trash2 size={16} />
             </button>
+            )}
           </div>
 
           <div className="mb-3">
