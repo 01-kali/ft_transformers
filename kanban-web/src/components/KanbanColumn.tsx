@@ -26,11 +26,11 @@ interface KanbanColumnProps {
 export default function KanbanColumn({ 
   id, title, tasks, count, onAdd, onDelete, onEdit, isLoading, isReadOnly }: KanbanColumnProps) {
   return (
-    <div className="flex-1  rounded-xl p-4 min-w-[280px] shrink-0 bg-[#F7F8FA] rounded-xl border border-gray-100 flex flex-col max-h-[calc(100vh-12rem)]">
+    <div className="flex-1 rounded-xl p-4 min-w-[280px] shrink-0 bg-slate-50/80 border border-gray-100 flex flex-col max-h-[calc(100vh-12rem)]">
        <div className="flex items-center justify-between mb-4 px-1 shrink-0">
         <div className="flex items-center gap-2">
-          <h2 className="font-bold text-gray-700 text-sm">{title}</h2>
-          <span className="text-gray-400 text-sm font-medium">({count})</span>
+          <h2 className="font-bold text-slate-700 text-sm">{title}</h2>
+          <span className="text-slate-400 text-sm font-medium">({count})</span>
         </div>
       </div>
 
@@ -74,10 +74,10 @@ export default function KanbanColumn({
             {isReadOnly && (
             <button 
               onClick={onAdd} 
-              className="w-full py-2 border border-gray-300 rounded-lg text-gray-500 text-sm font-medium hover:bg-white hover:border-gray-400 transition-all flex items-center justify-center gap-2 bg-transparent group mt-3"
+              className="w-full py-2 border border-slate-200 rounded-lg text-slate-500 text-sm font-medium hover:border-blue-200 hover:text-blue-600 hover:bg-blue-50 transition-all flex items-center justify-center gap-2 bg-white group mt-3"
             >
-              <Plus size={16} className="text-gray-400 group-hover:text-gray-600" />
-              New
+              <Plus size={16} className="text-slate-400 group-hover:text-blue-600 transition-colors" />
+              New Task
             </button>
             )}
           </div>

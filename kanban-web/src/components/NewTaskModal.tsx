@@ -2,11 +2,6 @@ import { useState , useEffect, useRef} from "react";
 import {
   X,
   Paperclip,
-  Bold,
-  Italic,
-  List,
-  AlignLeft,
-  Link,
   ChevronDown,
   Calendar as CalendarIcon,
 } from "lucide-react";
@@ -116,10 +111,7 @@ export default function NewTaskModal({
 
         <div className="flex justify-between items-center p-5 border-b border-gray-100">
           <h2 className="text-lg font-bold text-gray-800">{taskToEdit ? 'Edit Task' : 'New Task'}</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
-          >
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-1.5 rounded-md transition-all">
             <X size={20} />
           </button>
         </div>
@@ -135,13 +127,13 @@ export default function NewTaskModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Task Title"
-              className="w-full p-3 text-lg font-semibold text-gray-800 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400"
+              className="w-full p-3 text-lg font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder-slate-400"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-6">
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Start Date</label>
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Start Date</label>
               <div className="relative">
                 <input
                   autoFocus={isReadOnly}
@@ -149,14 +141,14 @@ export default function NewTaskModal({
                   type="date"
                   value={startDate || ""}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full p-2 pl-10 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full p-2 pl-10 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none"
                 />
-                <CalendarIcon size={16} className="absolute left-3 top-2.5 text-gray-400" />
+                <CalendarIcon size={16} className="absolute left-3 top-2.5 text-slate-400" />
               </div>
             </div>
             
             <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Due Date</label>
+              <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Due Date</label>
               <div className="relative">
                 <input
                   autoFocus={isReadOnly}
@@ -164,9 +156,9 @@ export default function NewTaskModal({
                   type="date"
                   value={dueDate || ""}
                   onChange={(e) => setDueDate(e.target.value)}
-                  className="w-full p-2 pl-10 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                  className="w-full p-2 pl-10 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none"
                 />
-                <CalendarIcon size={16} className="absolute left-3 top-2.5 text-gray-400" />
+                <CalendarIcon size={16} className="absolute left-3 top-2.5 text-slate-400" />
               </div>
             </div>
           </div>
@@ -223,20 +215,19 @@ export default function NewTaskModal({
             </div>
           </div>
 
-          <div className="mb-6 border border-gray-200 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 transition-all">
+          <div className="mb-6 border border-transparent rounded-lg overflow-hidden transition-all">
             <textarea
               disabled={!isReadOnly}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Add more details to this task..."
               rows={6}
-              className="w-full p-4 resize-none focus:outline-none text-gray-700 text-sm leading-relaxed"
+              className="w-full p-4 resize-none focus:outline-none text-slate-700 text-sm leading-relaxed bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all"
             />
           </div>
           
           <div className="mb-6">
-            <label 
-            className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
               Attachments
             </label>
             
@@ -250,9 +241,7 @@ export default function NewTaskModal({
             )}
 
             <div 
-
               onClick={isReadOnly ? handleFileClick : undefined} 
-              
               className={`border border-dashed rounded-lg p-4 flex items-center justify-center gap-2 transition-colors 
                 ${selectedFile || existingFile 
                   ? 'bg-blue-50 border-blue-300 text-blue-600'
@@ -286,12 +275,12 @@ export default function NewTaskModal({
             )}
           </div>
 
-          <div className="flex justify-end gap-3 pt-2">
+          <div className="flex justify-end gap-3 pt-2 mt-4 border-t border-gray-50 pt-4">
             {isReadOnly && (
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium transition-colors"
+              className="px-5 py-2 rounded-lg text-slate-500 font-bold hover:bg-slate-50 hover:text-slate-700 transition-colors"
             >
               Cancel
             </button>
@@ -299,7 +288,7 @@ export default function NewTaskModal({
             {isReadOnly && (
             <button
               type="submit"
-              className="px-6 py-2 bg-[#5B5CFF] text-white rounded-lg font-bold hover:bg-[#4d4eed] shadow-md transition-all"
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 shadow-md shadow-blue-500/20 transition-all"
             >
               {taskToEdit ? 'Save Changes' : 'Create Task'}
             </button>
